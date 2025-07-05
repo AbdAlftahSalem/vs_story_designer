@@ -152,26 +152,37 @@ class VSStoryDesigner extends StatefulWidget {
   final int? galleryThumbnailQuality;
   final String centerText;
 
+  // widgets in view
+  final Widget? backWidget;
+  final Widget? textWidget;
+  final Widget? drawWidget;
+  final Widget? saveWidget;
+
   // share image file path
   final String? mediaPath;
 
-  const VSStoryDesigner(
-      {super.key,
-      this.giphyKey,
-      this.themeType,
-      required this.onDone,
-      this.middleBottomWidget,
-      this.colorList,
-      this.gradientColors,
-      this.fileName,
-      this.fontFamilyList,
-      this.isCustomFontList,
-      this.onBackPress,
-      this.onDoneButtonStyle,
-      this.editorBackgroundColor,
-      this.galleryThumbnailQuality,
-      this.mediaPath,
-      required this.centerText});
+  const VSStoryDesigner({
+    super.key,
+    required this.centerText,
+    this.giphyKey,
+    this.themeType,
+    required this.onDone,
+    this.middleBottomWidget,
+    this.colorList,
+    this.gradientColors,
+    this.fileName,
+    this.fontFamilyList,
+    this.isCustomFontList,
+    this.onBackPress,
+    this.onDoneButtonStyle,
+    this.editorBackgroundColor,
+    this.galleryThumbnailQuality,
+    this.mediaPath,
+    this.backWidget,
+    this.textWidget,
+    this.drawWidget,
+    this.saveWidget,
+  });
 
   @override
   _VSStoryDesignerState createState() => _VSStoryDesignerState();

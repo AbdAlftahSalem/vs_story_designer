@@ -17,11 +17,22 @@ class TopTools extends StatefulWidget {
   final GlobalKey contentKey;
   final BuildContext context;
   final Function? renderWidget;
-  const TopTools(
-      {super.key,
-      required this.contentKey,
-      required this.context,
-      this.renderWidget});
+  // widgets in view
+  final Widget? backWidget;
+  final Widget? textWidget;
+  final Widget? drawWidget;
+  final Widget? saveWidget;
+
+  const TopTools({
+    super.key,
+    required this.contentKey,
+    required this.context,
+    this.renderWidget,
+    this.backWidget,
+    this.textWidget,
+    this.drawWidget,
+    this.saveWidget,
+  });
 
   @override
   _TopToolsState createState() => _TopToolsState();
@@ -54,10 +65,11 @@ class _TopToolsState extends State<TopTools> {
                         if (res) Navigator.pop(context);
                       });
                     },
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    )),
+                    child: widget.backWidget ??
+                        const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        )),
 
                 Row(
                   children: [
@@ -83,12 +95,13 @@ class _TopToolsState extends State<TopTools> {
                       backGroundColor: Colors.black12,
                       onTap: () => controlNotifier.isTextEditing =
                           !controlNotifier.isTextEditing,
-                      child: const ImageIcon(
-                        AssetImage('assets/icons/text.png',
-                            package: 'vs_story_designer'),
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      child: widget.textWidget ??
+                          const ImageIcon(
+                            AssetImage('assets/icons/text.png',
+                                package: 'vs_story_designer'),
+                            color: Colors.white,
+                            size: 20,
+                          ),
                     ),
                     ToolButton(
                         backGroundColor: controlNotifier.enableTextShadow
@@ -120,12 +133,13 @@ class _TopToolsState extends State<TopTools> {
                           controlNotifier.isPainting = true;
                           //createLinePainting(context: context);
                         },
-                        child: const ImageIcon(
-                          AssetImage('assets/icons/draw.png',
-                              package: 'vs_story_designer'),
-                          color: Colors.white,
-                          size: 20,
-                        )),
+                        child: widget.drawWidget ??
+                            const ImageIcon(
+                              AssetImage('assets/icons/draw.png',
+                                  package: 'vs_story_designer'),
+                              color: Colors.white,
+                              size: 20,
+                            )),
                   ],
                 ),
 
@@ -195,12 +209,13 @@ class _TopToolsState extends State<TopTools> {
                         _createVideo = false;
                       });
                     },
-                    child: const ImageIcon(
-                      AssetImage('assets/icons/download.png',
-                          package: 'vs_story_designer'),
-                      color: Colors.white,
-                      size: 20,
-                    )),
+                    child: widget.saveWidget ??
+                        const ImageIcon(
+                          AssetImage('assets/icons/download.png',
+                              package: 'vs_story_designer'),
+                          color: Colors.white,
+                          size: 20,
+                        )),
               ],
             ),
           ),

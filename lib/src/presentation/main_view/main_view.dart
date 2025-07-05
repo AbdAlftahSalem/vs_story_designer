@@ -82,23 +82,34 @@ class MainView extends StatefulWidget {
 // share image file path
   final String? mediaPath;
 
-  MainView(
-      {super.key,
-      this.themeType,
-      required this.giphyKey,
-      required this.onDone,
-      this.middleBottomWidget,
-      this.colorList,
-      this.fileName,
-      this.isCustomFontList,
-      this.fontFamilyList,
-      this.gradientColors,
-      this.onBackPress,
-      this.onDoneButtonStyle,
-      this.editorBackgroundColor,
-      this.galleryThumbnailQuality,
-      this.centerText,
-      this.mediaPath});
+  // widgets in view
+  final Widget? backWidget;
+  final Widget? textWidget;
+  final Widget? drawWidget;
+  final Widget? saveWidget;
+
+  MainView({
+    super.key,
+    this.themeType,
+    required this.giphyKey,
+    required this.onDone,
+    this.middleBottomWidget,
+    this.colorList,
+    this.fileName,
+    this.isCustomFontList,
+    this.fontFamilyList,
+    this.gradientColors,
+    this.onBackPress,
+    this.onDoneButtonStyle,
+    this.editorBackgroundColor,
+    this.galleryThumbnailQuality,
+    this.centerText,
+    this.mediaPath,
+    this.backWidget,
+    this.textWidget,
+    this.drawWidget,
+    this.saveWidget,
+  });
 
   @override
   _MainViewState createState() => _MainViewState();
@@ -389,6 +400,10 @@ class _MainViewState extends State<MainView> {
                               child: TopTools(
                                 contentKey: contentKey,
                                 context: context,
+                                backWidget: widget.backWidget,
+                                drawWidget: widget.drawWidget,
+                                saveWidget: widget.saveWidget,
+                                textWidget: widget.textWidget,
                                 // renderWidget: () => startRecording(
                                 //     controlNotifier: controlNotifier,
                                 //     renderingNotifier: renderingNotifier,
