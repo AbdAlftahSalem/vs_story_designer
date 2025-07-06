@@ -236,6 +236,10 @@ class _VSStoryDesignerState extends State<VSStoryDesigner> {
         galleryThumbnailQuality: widget.galleryThumbnailQuality,
         centerText: widget.centerText,
         mediaPath: widget.mediaPath,
+        backWidget: widget.backWidget,
+        drawWidget: widget.drawWidget,
+        saveWidget: widget.saveWidget,
+        textWidget: widget.textWidget,
       ),
     );
   }
