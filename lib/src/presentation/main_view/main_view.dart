@@ -418,26 +418,26 @@ class _MainViewState extends State<MainView> {
                           isDeletePosition: _isDeletePosition,
                         ),
 
-                        /// bottom tools
-                        if (!kIsWeb)
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: BottomTools(
-                              contentKey: contentKey,
-                              // renderWidget: () => startRecording(
-                              //     controlNotifier: controlNotifier,
-                              //     renderingNotifier: renderingNotifier,
-                              //     saveOnGallery: false),
-                              onDone: (bytes) {
-                                setState(() {
-                                  widget.onDone!(bytes);
-                                });
-                              },
-                              onDoneButtonStyle: widget.onDoneButtonStyle,
-                              editorBackgroundColor:
-                                  widget.editorBackgroundColor,
-                            ),
-                          ),
+                        // /// bottom tools
+                        // if (!kIsWeb)
+                        //   Align(
+                        //     alignment: Alignment.bottomCenter,
+                        //     child: BottomTools(
+                        //       contentKey: contentKey,
+                        //       // renderWidget: () => startRecording(
+                        //       //     controlNotifier: controlNotifier,
+                        //       //     renderingNotifier: renderingNotifier,
+                        //       //     saveOnGallery: false),
+                        //       onDone: (bytes) {
+                        //         setState(() {
+                        //           widget.onDone!(bytes);
+                        //         });
+                        //       },
+                        //       onDoneButtonStyle: widget.onDoneButtonStyle,
+                        //       editorBackgroundColor:
+                        //           widget.editorBackgroundColor,
+                        //     ),
+                        //   ),
 
                         /// show text editor
                         Visibility(
