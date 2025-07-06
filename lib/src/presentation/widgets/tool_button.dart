@@ -10,15 +10,14 @@ class ToolButton extends StatelessWidget {
   final Color colorBorder;
   final bool? borderHide;
 
-  const ToolButton(
-      {super.key,
-      required this.onTap,
-      required this.child,
-      this.backGroundColor,
-      this.padding,
-      this.onLongPress,
-      this.colorBorder = Colors.white,
-      this.borderHide = false});
+  const ToolButton({super.key,
+    required this.onTap,
+    required this.child,
+    this.backGroundColor,
+    this.padding,
+    this.onLongPress,
+    this.colorBorder = Colors.white,
+    this.borderHide = false});
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +32,18 @@ class ToolButton extends StatelessWidget {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(90),
             // elevation: 1,
-            shadowColor: Colors.black.withValues(alpha: 0.5),
+            // shadowColor: Colors.black.withValues(alpha: 0.5),
             child: Container(
               height: 36,
               width: 36,
               decoration: borderHide!
                   ? null
                   : BoxDecoration(
-                      color: backGroundColor ?? Colors.transparent,
-                      // shape: BoxShape.circle,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Colors.white, width: 0.5)),
+                // color: backGroundColor ?? Colors.transparent,
+                // shape: BoxShape.circle,
+                // borderRadius: BorderRadius.circular(5),
+                // border: Border.all(color: Colors.white, width: 0.5)
+              ),
               child: Transform.scale(
                 scale: 0.8,
                 child: child,

@@ -91,18 +91,18 @@ class _TopToolsState extends State<TopTools> {
                               }
                             }),
                       ),
-                    ToolButton(
-                      backGroundColor: Colors.black12,
-                      onTap: () => controlNotifier.isTextEditing =
-                          !controlNotifier.isTextEditing,
-                      child: widget.textWidget ??
-                          const ImageIcon(
-                            AssetImage('assets/icons/text.png',
-                                package: 'vs_story_designer'),
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                    ),
+                    // ToolButton(
+                    //   backGroundColor: Colors.black12,
+                    //   onTap: () => controlNotifier.isTextEditing =
+                    //       !controlNotifier.isTextEditing,
+                    //   child: widget.textWidget ??
+                    //       const ImageIcon(
+                    //         AssetImage('assets/icons/text.png',
+                    //             package: 'vs_story_designer'),
+                    //         color: Colors.white,
+                    //         size: 20,
+                    //       ),
+                    // ),
                     ToolButton(
                         backGroundColor: controlNotifier.enableTextShadow
                             ? Colors.white
@@ -128,7 +128,7 @@ class _TopToolsState extends State<TopTools> {
                     //         context: context,
                     //         giphyKey: controlNotifier.giphyKey)),
                     ToolButton(
-                        backGroundColor: Colors.black12,
+                        // backGroundColor: Colors.black12,
                         onTap: () {
                           controlNotifier.isPainting = true;
                           //createLinePainting(context: context);
