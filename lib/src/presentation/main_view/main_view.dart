@@ -227,13 +227,13 @@ class _MainViewState extends State<MainView> {
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(0),
                               child: SizedBox(
                                 width: _screenSize.size.width,
                                 height: Platform.isIOS
-                                    ? (_screenSize.size.height - 135) -
+                                    ? (_screenSize.size.height - 0) -
                                         _screenSize.viewPadding.top
-                                    : (_screenSize.size.height - 132),
+                                    : (_screenSize.size.height - 0),
                                 // child: ScreenRecorder(
                                 //   controller: _recorderController,
                                 child: RepaintBoundary(
