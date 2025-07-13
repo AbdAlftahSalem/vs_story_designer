@@ -5,13 +5,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // import 'package:modal_gif_picker/modal_gif_picker.dart';
 import 'package:provider/provider.dart';
+
 // import 'package:vs_story_designer/src/domain/models/editable_items.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/control_provider.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
+
 // import 'package:vs_story_designer/src/domain/sevices/save_as_image.dart';
 import 'package:vs_story_designer/src/presentation/utils/Extensions/hexColor.dart';
+
 // import 'package:vs_story_designer/src/presentation/utils/constants/item_type.dart';
 import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
 import 'package:vs_story_designer/vs_story_designer.dart';
@@ -42,10 +45,15 @@ import 'package:vs_story_designer/vs_story_designer.dart';
 // }
 
 /// custom exit dialog
-Future<bool> exitDialog(
-    {required context,
-    required contentKey,
-    required ThemeType themeType}) async {
+Future<bool> exitDialog({
+  required context,
+  required contentKey,
+  required ThemeType themeType,
+  required String title,
+  required String description,
+  required String discardText,
+  required String cancelText,
+}) async {
   return (await showDialog(
         context: context,
         // barrierColor:

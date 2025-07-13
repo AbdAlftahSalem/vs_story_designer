@@ -161,32 +161,46 @@ class VSStoryDesigner extends StatefulWidget {
   final String? cancelText;
   final String? doneText;
 
+  // close alert strings
+  final String closeAlertTitle;
+  final String closeAlertDescription;
+  final String closeAlertDiscardText;
+  final String closeAlertCancelText;
+
+  final Color? saveCardColor;
+
   // share image file path
   final String? mediaPath;
 
-  const VSStoryDesigner(
-      {super.key,
-      required this.centerText,
-      this.giphyKey,
-      this.themeType,
-      required this.onDone,
-      this.middleBottomWidget,
-      this.colorList,
-      this.gradientColors,
-      this.fileName,
-      this.fontFamilyList,
-      this.isCustomFontList,
-      this.onBackPress,
-      this.onDoneButtonStyle,
-      this.editorBackgroundColor,
-      this.galleryThumbnailQuality,
-      this.mediaPath,
-      this.backWidget,
-      this.textWidget,
-      this.drawWidget,
-      this.saveWidget,
-      this.doneText,
-      this.cancelText});
+  const VSStoryDesigner({
+    super.key,
+    required this.centerText,
+    this.giphyKey,
+    this.themeType,
+    required this.onDone,
+    this.middleBottomWidget,
+    this.colorList,
+    this.gradientColors,
+    this.fileName,
+    this.fontFamilyList,
+    this.isCustomFontList,
+    this.onBackPress,
+    this.onDoneButtonStyle,
+    this.editorBackgroundColor,
+    this.galleryThumbnailQuality,
+    this.mediaPath,
+    this.backWidget,
+    this.textWidget,
+    this.drawWidget,
+    this.saveWidget,
+    this.doneText,
+    this.cancelText,
+    required this.closeAlertTitle,
+    required this.closeAlertDescription,
+    required this.closeAlertDiscardText,
+    required this.closeAlertCancelText,
+    this.saveCardColor,
+  });
 
   @override
   _VSStoryDesignerState createState() => _VSStoryDesignerState();
@@ -246,6 +260,11 @@ class _VSStoryDesignerState extends State<VSStoryDesigner> {
         textWidget: widget.textWidget,
         doneText: widget.doneText,
         cancelText: widget.cancelText,
+        closeAlertTitle: widget.closeAlertTitle,
+        closeAlertDescription: widget.closeAlertDescription,
+        closeAlertDiscardText: widget.closeAlertDiscardText,
+        closeAlertCancelText: widget.closeAlertCancelText,
+        saveCardColor: widget.saveCardColor ?? Colors.white,
       ),
     );
   }

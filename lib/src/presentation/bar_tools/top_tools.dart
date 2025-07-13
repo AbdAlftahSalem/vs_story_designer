@@ -17,11 +17,19 @@ class TopTools extends StatefulWidget {
   final GlobalKey contentKey;
   final BuildContext context;
   final Function? renderWidget;
+
   // widgets in view
   final Widget? backWidget;
   final Widget? textWidget;
   final Widget? drawWidget;
   final Widget? saveWidget;
+
+  final String closeAlertTitle;
+  final String closeAlertDescription;
+  final String closeAlertDiscardText;
+  final String closeAlertCancelText;
+
+  final Color? saveCardColor;
 
   const TopTools({
     super.key,
@@ -32,6 +40,11 @@ class TopTools extends StatefulWidget {
     this.textWidget,
     this.drawWidget,
     this.saveWidget,
+    required this.closeAlertTitle,
+    required this.closeAlertDescription,
+    required this.closeAlertDiscardText,
+    required this.closeAlertCancelText,
+    this.saveCardColor = Colors.white,
   });
 
   @override
@@ -40,6 +53,7 @@ class TopTools extends StatefulWidget {
 
 class _TopToolsState extends State<TopTools> {
   bool _createVideo = false;
+
   @override
   Widget build(BuildContext context) {
     return Consumer3<ControlNotifier, PaintingNotifier,
@@ -58,10 +72,14 @@ class _TopToolsState extends State<TopTools> {
                     backGroundColor: Colors.black12,
                     onTap: () async {
                       exitDialog(
-                              context: widget.context,
-                              contentKey: widget.contentKey,
-                              themeType: controlNotifier.themeType)
-                          .then((res) {
+                        context: widget.context,
+                        contentKey: widget.contentKey,
+                        themeType: controlNotifier.themeType,
+                        title: widget.closeAlertTitle,
+                        description: widget.closeAlertDescription,
+                        cancelText: widget.closeAlertCancelText,
+                        discardText: widget.closeAlertDiscardText,
+                      ).then((res) {
                         if (res) Navigator.pop(context);
                       });
                     },
@@ -161,21 +179,22 @@ class _TopToolsState extends State<TopTools> {
                       if (paintingNotifier.lines.isNotEmpty ||
                           itemNotifier.draggableWidget.isNotEmpty) {
                         showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Card(
-                                      color: Colors.white,
-                                      child: Container(
-                                          margin: const EdgeInsets.all(50),
-                                          child:
-                                              const CircularProgressIndicator())),
-                                ],
-                              );
-                            });
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Card(
+                                    color: widget.saveCardColor ?? Colors.white,
+                                    child: Container(
+                                        margin: const EdgeInsets.all(50),
+                                        child:
+                                            const CircularProgressIndicator())),
+                              ],
+                            );
+                          },
+                        );
                         for (var element in itemNotifier.draggableWidget) {
                           if (element.type == ItemType.gif ||
                               element.animationType != TextAnimationType.none) {
@@ -190,10 +209,11 @@ class _TopToolsState extends State<TopTools> {
                         } else {
                           debugPrint('creating image');
                           var response = await takePicture(
-                              contentKey: widget.contentKey,
-                              context: context,
-                              saveToGallery: true,
-                              fileName: controlNotifier.folderName);
+                            contentKey: widget.contentKey,
+                            context: context,
+                            saveToGallery: true,
+                            fileName: controlNotifier.folderName,
+                          );
                           if (response) {
                             Fluttertoast.showToast(msg: 'Successfully saved');
                           } else {}

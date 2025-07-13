@@ -19,7 +19,11 @@ class TextEditor extends StatefulWidget {
   final BuildContext context;
   final String doneText;
 
-  const TextEditor({super.key, required this.context, required this.doneText});
+  const TextEditor({
+    super.key,
+    required this.context,
+    required this.doneText,
+  });
 
   @override
   State<TextEditor> createState() => _TextEditorState();

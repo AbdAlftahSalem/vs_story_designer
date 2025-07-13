@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 // import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:photo_view/photo_view.dart';
@@ -17,21 +16,18 @@ import 'package:vs_story_designer/src/domain/providers/notifiers/control_provide
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/gradient_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
-
 // import 'package:vs_story_designer/src/domain/providers/notifiers/rendering_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/scroll_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
 import 'package:vs_story_designer/src/presentation/bar_tools/top_tools.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/delete_item.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/draggable_widget.dart';
-
 // import 'package:vs_story_designer/src/presentation/main_view/widgets/rendering_indicator.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/painting.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/widgets/sketcher.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/TextEditor.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/font_family.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/item_type.dart';
-
 // import 'package:vs_story_designer/src/presentation/utils/constants/render_state.dart';
 import 'package:vs_story_designer/src/presentation/utils/modal_sheets.dart';
 import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
@@ -92,6 +88,14 @@ class MainView extends StatefulWidget {
   final String? cancelText;
   final String? doneText;
 
+  // alert dialog texts
+  final String closeAlertTitle;
+  final String closeAlertDescription;
+  final String closeAlertDiscardText;
+  final String closeAlertCancelText;
+
+  final Color? saveCardColor;
+
   MainView({
     super.key,
     this.themeType,
@@ -115,6 +119,11 @@ class MainView extends StatefulWidget {
     this.saveWidget,
     this.cancelText,
     this.doneText,
+    required this.closeAlertTitle,
+    required this.closeAlertDescription,
+    required this.closeAlertDiscardText,
+    required this.closeAlertCancelText,
+    this.saveCardColor,
   });
 
   @override
@@ -410,6 +419,14 @@ class _MainViewState extends State<MainView> {
                                 drawWidget: widget.drawWidget,
                                 saveWidget: widget.saveWidget,
                                 textWidget: widget.textWidget,
+                                closeAlertCancelText:
+                                    widget.closeAlertCancelText,
+                                closeAlertDiscardText:
+                                    widget.closeAlertDiscardText,
+                                closeAlertDescription:
+                                    widget.closeAlertDescription,
+                                closeAlertTitle: widget.closeAlertTitle,
+                                saveCardColor: widget.saveCardColor,
                                 // renderWidget: () => startRecording(
                                 //     controlNotifier: controlNotifier,
                                 //     renderingNotifier: renderingNotifier,
@@ -614,9 +631,14 @@ class _MainViewState extends State<MainView> {
     else if (!controlNotifier.isTextEditing && !controlNotifier.isPainting) {
       return widget.onBackPress ??
           exitDialog(
-              context: context,
-              contentKey: contentKey,
-              themeType: widget.themeType!);
+            context: context,
+            contentKey: contentKey,
+            themeType: widget.themeType!,
+            title: widget.closeAlertTitle,
+            description: widget.closeAlertDescription,
+            cancelText: widget.closeAlertCancelText,
+            discardText: widget.closeAlertDiscardText,
+          );
     }
     return false;
   }
