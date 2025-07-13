@@ -8,6 +8,7 @@ import 'package:vs_story_designer/src/domain/providers/notifiers/control_provide
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/gradient_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
+
 // import 'package:vs_story_designer/src/domain/providers/notifiers/rendering_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/scroll_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
@@ -157,32 +158,35 @@ class VSStoryDesigner extends StatefulWidget {
   final Widget? textWidget;
   final Widget? drawWidget;
   final Widget? saveWidget;
+  final String? cancelText;
+  final String? doneText;
 
   // share image file path
   final String? mediaPath;
 
-  const VSStoryDesigner({
-    super.key,
-    required this.centerText,
-    this.giphyKey,
-    this.themeType,
-    required this.onDone,
-    this.middleBottomWidget,
-    this.colorList,
-    this.gradientColors,
-    this.fileName,
-    this.fontFamilyList,
-    this.isCustomFontList,
-    this.onBackPress,
-    this.onDoneButtonStyle,
-    this.editorBackgroundColor,
-    this.galleryThumbnailQuality,
-    this.mediaPath,
-    this.backWidget,
-    this.textWidget,
-    this.drawWidget,
-    this.saveWidget,
-  });
+  const VSStoryDesigner(
+      {super.key,
+      required this.centerText,
+      this.giphyKey,
+      this.themeType,
+      required this.onDone,
+      this.middleBottomWidget,
+      this.colorList,
+      this.gradientColors,
+      this.fileName,
+      this.fontFamilyList,
+      this.isCustomFontList,
+      this.onBackPress,
+      this.onDoneButtonStyle,
+      this.editorBackgroundColor,
+      this.galleryThumbnailQuality,
+      this.mediaPath,
+      this.backWidget,
+      this.textWidget,
+      this.drawWidget,
+      this.saveWidget,
+      this.doneText,
+      this.cancelText});
 
   @override
   _VSStoryDesignerState createState() => _VSStoryDesignerState();
@@ -240,6 +244,8 @@ class _VSStoryDesignerState extends State<VSStoryDesigner> {
         drawWidget: widget.drawWidget,
         saveWidget: widget.saveWidget,
         textWidget: widget.textWidget,
+        doneText: widget.doneText,
+        cancelText: widget.cancelText,
       ),
     );
   }
