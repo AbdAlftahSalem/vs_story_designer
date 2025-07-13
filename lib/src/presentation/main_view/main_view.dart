@@ -450,6 +450,7 @@ class _MainViewState extends State<MainView> {
                           visible: controlNotifier.isTextEditing,
                           child: TextEditor(
                             context: context,
+                            doneText: widget.doneText ?? "",
                           ),
                         ),
 

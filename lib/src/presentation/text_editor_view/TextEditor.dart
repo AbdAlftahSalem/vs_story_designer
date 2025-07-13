@@ -6,6 +6,7 @@ import 'package:vs_story_designer/src/domain/models/editable_items.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/control_provider.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
+
 // import 'package:vs_story_designer/src/presentation/text_editor_view/widgets/animation_selector.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/widgets/font_selector.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/widgets/text_field_widget.dart';
@@ -16,7 +17,9 @@ import 'package:vs_story_designer/src/presentation/widgets/size_slider_selector.
 
 class TextEditor extends StatefulWidget {
   final BuildContext context;
-  const TextEditor({super.key, required this.context});
+  final String doneText;
+
+  const TextEditor({super.key, required this.context, required this.doneText});
 
   @override
   State<TextEditor> createState() => _TextEditorState();
@@ -26,6 +29,7 @@ class _TextEditorState extends State<TextEditor> {
   List<String> splitList = [];
   String sequenceList = '';
   String lastSequenceList = '';
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -76,6 +80,7 @@ class _TextEditorState extends State<TextEditor> {
                               child: TopTextTools(
                                 onDone: () => _onTap(
                                     context, controlNotifier, editorNotifier),
+                                doneText: widget.doneText,
                               )),
                         ),
 
