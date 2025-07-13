@@ -15,7 +15,9 @@ import 'package:vs_story_designer/src/presentation/widgets/color_selector.dart';
 import 'package:vs_story_designer/src/presentation/widgets/size_slider_selector.dart';
 
 class Painting extends StatefulWidget {
-  const Painting({super.key});
+  const Painting({super.key, required this.doneText});
+
+  final String doneText;
 
   @override
   State<Painting> createState() => _PaintingState();
@@ -178,7 +180,7 @@ class _PaintingState extends State<Painting> {
                 ),
 
                 /// top painting tools
-                const SafeArea(child: TopPaintingTools()),
+                SafeArea(child: TopPaintingTools(doneText: widget.doneText)),
 
                 /// color picker
                 const Align(

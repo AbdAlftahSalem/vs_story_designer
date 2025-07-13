@@ -3,9 +3,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 // import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:photo_view/photo_view.dart';
@@ -17,20 +17,21 @@ import 'package:vs_story_designer/src/domain/providers/notifiers/control_provide
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/gradient_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
+
 // import 'package:vs_story_designer/src/domain/providers/notifiers/rendering_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/scroll_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
-// import 'package:vs_story_designer/src/domain/sevices/save_as_gif_mp4.dart';
-import 'package:vs_story_designer/src/presentation/bar_tools/bottom_tools.dart';
 import 'package:vs_story_designer/src/presentation/bar_tools/top_tools.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/delete_item.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/draggable_widget.dart';
+
 // import 'package:vs_story_designer/src/presentation/main_view/widgets/rendering_indicator.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/painting.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/widgets/sketcher.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/TextEditor.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/font_family.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/item_type.dart';
+
 // import 'package:vs_story_designer/src/presentation/utils/constants/render_state.dart';
 import 'package:vs_story_designer/src/presentation/utils/modal_sheets.dart';
 import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
@@ -73,6 +74,7 @@ class MainView extends StatefulWidget {
 
   /// editor custom color palette list
   List<Color>? colorList;
+
   // Text appearing on center of design screen
   final String? centerText;
 
@@ -87,6 +89,8 @@ class MainView extends StatefulWidget {
   final Widget? textWidget;
   final Widget? drawWidget;
   final Widget? saveWidget;
+  final String? cancelText;
+  final String? doneText;
 
   MainView({
     super.key,
@@ -109,6 +113,8 @@ class MainView extends StatefulWidget {
     this.textWidget,
     this.drawWidget,
     this.saveWidget,
+    this.cancelText,
+    this.doneText,
   });
 
   @override
@@ -450,7 +456,9 @@ class _MainViewState extends State<MainView> {
                         /// show painting sketch
                         Visibility(
                           visible: controlNotifier.isPainting,
-                          child: const Painting(),
+                          child: Painting(
+                            doneText: widget.doneText ?? "",
+                          ),
                         )
                       ],
                     ),
@@ -496,9 +504,9 @@ class _MainViewState extends State<MainView> {
                                     color: Colors.white,
                                     width: 1.2,
                                   )),
-                              child: const Text(
-                                'Cancel',
-                                style: TextStyle(
+                              child: Text(
+                                widget.cancelText ?? 'Cancel',
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400),
