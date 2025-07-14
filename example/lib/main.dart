@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:vs_story_designer/vs_story_designer.dart';
 import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:vs_story_designer/vs_story_designer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -74,15 +74,19 @@ class _ExampleState extends State<Example> {
                                   //   FontType.typewriter
                                   // ],
                                   // middleBottomWidget: const SizedBox(),
-                                  themeType: ThemeType
-                                      .light, // OPTIONAL, Default ThemeType.dark
+                                  themeType: ThemeType.light,
+                                  // OPTIONAL, Default ThemeType.dark
                                   galleryThumbnailQuality: 250,
                                   onDone: (uri) {
                                     debugPrint(uri);
                                     // SharePlus.instance.share(ShareParams(
-                                        // files: [XFile(File(uri).path)]));
+                                    // files: [XFile(File(uri).path)]));
                                   },
                                   mediaPath: mediaPath,
+                                  closeAlertTitle: 'Discard Changes?',
+                                  closeAlertDescription: 'Do you want to discard changes?',
+                                  closeAlertDiscardText: 'Discard',
+                                  closeAlertCancelText: 'cancel',
                                 )));
                   },
                   child: const Text('Create',

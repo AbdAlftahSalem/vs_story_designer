@@ -673,9 +673,12 @@ class _MainViewState extends State<MainView> {
 
   /// active delete widget with offset position
   void _deletePosition(EditableItem item, PointerMoveEvent details) {
+    print("Dy: ${item.position.dy}");
+    print("Dx: ${item.position.dx}");
+    print("-" * 80);
     if (item.type == ItemType.text &&
-        item.position.dy >= 0.32 &&
-        item.position.dx >= -0.122 &&
+        item.position.dy >= 0.22 &&
+        item.position.dx >= -0.03 &&
         item.position.dx <= 0.122) {
       setState(() {
         _isDeletePosition = true;
