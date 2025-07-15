@@ -41,7 +41,7 @@ class MainView extends StatefulWidget {
   final String giphyKey;
   final List<List<Color>>? gradientColors;
   final Widget? middleBottomWidget;
-  final Function(String) onDone;
+  final Function(String, int) onDone;
   final Widget? onDoneButtonStyle;
   final Future<bool>? onBackPress;
   Color? editorBackgroundColor;
@@ -429,7 +429,7 @@ class _MainViewState extends State<MainView> {
                                             fileName:
                                                 controlNotifier.folderName,
                                           );
-                                          widget.onDone(response ?? "");
+                                          widget.onDone(response ?? "", index);
                                         },
                                         child: widget.bottomWidget[index],
                                       )),

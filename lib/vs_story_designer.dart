@@ -135,7 +135,7 @@ class VSStoryDesigner extends StatefulWidget {
   final Widget? middleBottomWidget;
 
   /// on done
-  final Function(String) onDone;
+  final Function(String, int) onDone;
 
   /// on done button Text
   final Widget? onDoneButtonStyle;

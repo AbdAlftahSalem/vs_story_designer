@@ -77,7 +77,7 @@ class _ExampleState extends State<Example> {
                           themeType: ThemeType.light,
                           // OPTIONAL, Default ThemeType.dark
                           galleryThumbnailQuality: 250,
-                          onDone: (uri) {
+                          onDone: (uri, i) {
                             debugPrint(uri);
                             // SharePlus.instance.share(ShareParams(
                             // files: [XFile(File(uri).path)]));
