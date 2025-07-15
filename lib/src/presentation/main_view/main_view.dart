@@ -2,13 +2,14 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-
-// import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:vs_media_picker/vs_media_picker.dart';
@@ -18,83 +19,43 @@ import 'package:vs_story_designer/src/domain/providers/notifiers/control_provide
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/gradient_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
-
-// import 'package:vs_story_designer/src/domain/providers/notifiers/rendering_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/scroll_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
-import 'package:vs_story_designer/src/domain/sevices/save_as_image.dart';
 import 'package:vs_story_designer/src/presentation/bar_tools/top_tools.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/delete_item.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/draggable_widget.dart';
-
-// import 'package:vs_story_designer/src/presentation/main_view/widgets/rendering_indicator.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/painting.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/widgets/sketcher.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/TextEditor.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/font_family.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/item_type.dart';
-
-// import 'package:vs_story_designer/src/presentation/utils/constants/render_state.dart';
 import 'package:vs_story_designer/src/presentation/utils/modal_sheets.dart';
 import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
 import 'package:vs_story_designer/src/presentation/widgets/scrollable_pageView.dart';
 import 'package:vs_story_designer/vs_story_designer.dart';
 
 class MainView extends StatefulWidget {
-  /// editor custom font families
   final List<FontType>? fontFamilyList;
-
-  /// editor custom font families package
   final bool? isCustomFontList;
-
-  /// you can pass a folderName where media files will be saved to instead of default folder
   final String? fileName;
-
-  /// giphy api key
   final String giphyKey;
-
-  /// editor custom color gradients
   final List<List<Color>>? gradientColors;
-
-  /// editor custom logo
   final Widget? middleBottomWidget;
-
-  /// on done
   final Function(String) onDone;
-
-  /// on done button Text
   final Widget? onDoneButtonStyle;
-
-  /// on back pressed
   final Future<bool>? onBackPress;
-
-  /// editor background color
   Color? editorBackgroundColor;
-
-  /// gallery thumbnail quality
   final int? galleryThumbnailQuality;
-
-  /// editor custom color palette list
   List<Color>? colorList;
-
-  // Text appearing on center of design screen
   final String? centerText;
-
-// theme type
   final ThemeType? themeType;
-
-// share image file path
   final String? mediaPath;
-
-  // widgets in view
   final Widget? backWidget;
   final Widget? textWidget;
   final Widget? drawWidget;
   final Widget? saveWidget;
   final String? cancelText;
   final String? doneText;
-
-  // alert dialog texts
   final String closeAlertTitle;
   final String closeAlertDescription;
   final String closeAlertDiscardText;
@@ -102,7 +63,6 @@ class MainView extends StatefulWidget {
   final BorderRadiusGeometry? borderRadius;
   final List<Widget> bottomWidget;
   final double? highTextEditor;
-
   final Color? saveCardColor;
 
   MainView({
@@ -143,28 +103,18 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  /// content container key
   final GlobalKey contentKey = GlobalKey();
+  final GlobalKey _captureKey =
+      GlobalKey(); // New key for capturing content without bottom widget
 
-  ///Editable item
   EditableItem? _activeItem;
-
-  /// Gesture Detector listen changes
   Offset _initPos = const Offset(0, 0);
   Offset _currentPos = const Offset(0, 0);
   double _currentScale = 1;
   double _currentRotation = 0;
-
-  /// delete position
   bool _isDeletePosition = false;
   bool _inAction = false;
-
-  /// screen size
   final _screenSize = MediaQueryData.fromView(WidgetsBinding.instance.window);
-
-  /// recorder controller
-  // final WidgetRecorderController _recorderController =
-  //     WidgetRecorderController();
 
   @override
   void initState() {
@@ -173,7 +123,6 @@ class _MainViewState extends State<MainView> {
       var _tempItemProvider =
           Provider.of<DraggableWidgetNotifier>(context, listen: false);
 
-      /// initialize control variable provider
       _control.giphyKey = widget.giphyKey;
       _control.folderName = widget.fileName ?? "VS_Story_Designer";
       _control.middleBottomWidget = widget.middleBottomWidget;
@@ -205,6 +154,43 @@ class _MainViewState extends State<MainView> {
     super.dispose();
   }
 
+  Future<String?> _takePictureWithoutBottomWidget({
+    required bool saveToGallery,
+    required String fileName,
+  }) async {
+    try {
+      RenderRepaintBoundary boundary = _captureKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
+
+      ui.Image image = await boundary.toImage(pixelRatio: 3);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final String dir = (await getApplicationDocumentsDirectory()).path;
+      String imagePath =
+          '$dir/${fileName}_${DateTime.now().millisecondsSinceEpoch}.png';
+      File capturedFile = File(imagePath);
+      await capturedFile.writeAsBytes(pngBytes);
+
+      if (saveToGallery) {
+        final result = await ImageGallerySaverPlus.saveImage(
+          pngBytes,
+          quality: 100,
+          name: "${fileName}_${DateTime.now().millisecondsSinceEpoch}.png",
+        );
+        if (result == null || !result['isSuccess']) {
+          debugPrint('Failed to save image to gallery');
+        }
+      }
+
+      return imagePath;
+    } catch (e) {
+      debugPrint('exception => $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -225,10 +211,7 @@ class _MainViewState extends State<MainView> {
             TextEditingNotifier>(
           builder: (context, controlNotifier, itemProvider, scrollProvider,
               colorProvider, paintingProvider, editingProvider, child) {
-            // return Consumer<RenderingNotifier>(
-            //   builder: (_, renderingNotifier, __) {
             return SafeArea(
-              //top: false,
               child: Stack(
                 children: [
                   ScrollablePageView(
@@ -241,9 +224,6 @@ class _MainViewState extends State<MainView> {
                     mainView: Stack(
                       alignment: Alignment.center,
                       children: [
-                        ///gradient container
-                        /// this container will contain all widgets(image/texts/draws/sticker)
-                        /// wrap this widget with coloredFilter
                         GestureDetector(
                           onScaleStart: _onScaleStart,
                           onScaleUpdate: _onScaleUpdate,
@@ -263,14 +243,11 @@ class _MainViewState extends State<MainView> {
                                         ? (_screenSize.size.height - 135) -
                                             _screenSize.viewPadding.top
                                         : (_screenSize.size.height - 132)),
-                                // child: ScreenRecorder(
-                                //   controller: _recorderController,
                                 child: RepaintBoundary(
-                                  key: contentKey,
+                                  key: _captureKey, // Using the new capture key
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 200),
                                     decoration: BoxDecoration(
-                                        //borderRadius: BorderRadius.circular(25),
                                         gradient:
                                             controlNotifier.mediaPath.isEmpty
                                                 ? LinearGradient(
@@ -295,16 +272,12 @@ class _MainViewState extends State<MainView> {
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
-                                          /// in this case photo view works as a main background container to manage
-                                          /// the gestures of all movable items.
                                           PhotoView.customChild(
                                             backgroundDecoration:
                                                 const BoxDecoration(
                                                     color: Colors.transparent),
                                             child: Container(),
                                           ),
-
-                                          ///list items
                                           ...itemProvider.draggableWidget.map(
                                               (editableItem) => DraggableWidget(
                                                     context: context,
@@ -329,8 +302,6 @@ class _MainViewState extends State<MainView> {
                                                       );
                                                     },
                                                   )),
-
-                                          /// finger paint
                                           IgnorePointer(
                                             ignoring: true,
                                             child: Align(
@@ -377,13 +348,10 @@ class _MainViewState extends State<MainView> {
                                     ),
                                   ),
                                 ),
-                                // ),
                               ),
                             ),
                           ),
                         ),
-
-                        /// middle text
                         if (itemProvider.draggableWidget.isEmpty &&
                             !controlNotifier.isTextEditing &&
                             paintingProvider.lines.isEmpty)
@@ -419,8 +387,6 @@ class _MainViewState extends State<MainView> {
                               ),
                             ),
                           ),
-
-                        /// top tools
                         Visibility(
                           visible: !controlNotifier.isTextEditing &&
                               !controlNotifier.isPainting,
@@ -442,21 +408,13 @@ class _MainViewState extends State<MainView> {
                                 closeAlertTitle: widget.closeAlertTitle,
                                 saveCardColor:
                                     widget.saveCardColor ?? Colors.white,
-                                // renderWidget: () => startRecording(
-                                //     controlNotifier: controlNotifier,
-                                //     renderingNotifier: renderingNotifier,
-                                //     saveOnGallery: true),
                               )),
                         ),
-
-                        /// delete item when the item is in position
                         DeleteItem(
                           activeItem: _activeItem,
                           animationsDuration: const Duration(milliseconds: 300),
                           isDeletePosition: _isDeletePosition,
                         ),
-
-                        /// bottom tools
                         if (!kIsWeb)
                           Align(
                             alignment: Alignment.bottomCenter,
@@ -465,36 +423,18 @@ class _MainViewState extends State<MainView> {
                                   widget.bottomWidget.length,
                                   (index) => GestureDetector(
                                         onTap: () async {
-                                          var response = await takePicture(
-                                            contentKey: contentKey,
-                                            context: context,
+                                          var response =
+                                              await _takePictureWithoutBottomWidget(
                                             saveToGallery: true,
                                             fileName:
                                                 controlNotifier.folderName,
                                           );
-                                          widget.onDone!(response ?? "");
+                                          widget.onDone(response ?? "");
                                         },
                                         child: widget.bottomWidget[index],
                                       )),
                             ),
-                            // child: BottomTools(
-                            //   contentKey: contentKey,
-                            //   // renderWidget: () => startRecording(
-                            //   //     controlNotifier: controlNotifier,
-                            //   //     renderingNotifier: renderingNotifier,
-                            //   //     saveOnGallery: false),
-                            //   onDone: (bytes) {
-                            //     setState(() {
-                            //       widget.onDone!(bytes);
-                            //     });
-                            //   },
-                            //   onDoneButtonStyle: widget.onDoneButtonStyle,
-                            //   editorBackgroundColor:
-                            //       widget.editorBackgroundColor,
-                            // ),
                           ),
-
-                        /// show text editor
                         Visibility(
                           visible: controlNotifier.isTextEditing,
                           child: TextEditor(
@@ -502,8 +442,6 @@ class _MainViewState extends State<MainView> {
                             doneText: widget.doneText ?? 'Done',
                           ),
                         ),
-
-                        /// show painting sketch
                         Visibility(
                           visible: controlNotifier.isPainting,
                           child: Painting(
@@ -567,100 +505,26 @@ class _MainViewState extends State<MainView> {
                       ),
                     ),
                   ),
-                  // const RenderingIndicator()
                 ],
               ),
             );
-            //   },
-            // );
           },
         ),
       ),
     );
   }
 
-  /// recording and save mp4 widget
-  // void startRecording(
-  //     {required ControlNotifier controlNotifier,
-  //     required RenderingNotifier renderingNotifier,
-  //     required bool saveOnGallery}) {
-  //   Duration seg = const Duration(seconds: 1);
-  //   _recorderController.start(
-  //       controlNotifier: controlNotifier, renderingNotifier: renderingNotifier);
-  //   Timer.periodic(seg, (timer) async {
-  //     if (renderingNotifier.recordingDuration == 0) {
-  //       setState(() {
-  //         _recorderController.stop(
-  //             controlNotifier: controlNotifier,
-  //             renderingNotifier: renderingNotifier);
-  //         timer.cancel();
-  //       });
-  //       var path = await _recorderController.export(
-  //           controlNotifier: controlNotifier,
-  //           renderingNotifier: renderingNotifier);
-  //       if (path['success']) {
-  //         if (saveOnGallery) {
-  //           setState(() {
-  //             renderingNotifier.renderState = RenderState.saving;
-  //           });
-  //           await ImageGallerySaver.saveFile(path['outPath'],
-  //                   name: "${DateTime.now()}")
-  //               .then((value) {
-  //             if (value['isSuccess']) {
-  //               debugPrint(value['filePath']);
-  //               Fluttertoast.showToast(msg: 'Recording successfully saved');
-  //             } else {
-  //               debugPrint('Gallery saver error: ${value['errorMessage']}');
-  //               Fluttertoast.showToast(msg: 'Gallery saver error');
-  //             }
-  //           }).whenComplete(() {
-  //             setState(() {
-  //               controlNotifier.isRenderingWidget = false;
-  //               renderingNotifier.renderState = RenderState.none;
-  //               renderingNotifier.recordingDuration = 3;
-  //             });
-  //           });
-  //         } else {
-  //           setState(() {
-  //             controlNotifier.isRenderingWidget = false;
-  //             renderingNotifier.renderState = RenderState.none;
-  //             renderingNotifier.recordingDuration = 3;
-  //             widget.onDone!(path['outPath']);
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           renderingNotifier.renderState = RenderState.none;
-  //           Fluttertoast.showToast(msg: 'Something was wrong.');
-  //         });
-  //       }
-  //     } else {
-  //       setState(() {
-  //         renderingNotifier.recordingDuration--;
-  //       });
-  //     }
-  //   });
-  // }
-
-  /// validate pop scope gesture
   Future<bool> _popScope() async {
     final controlNotifier =
         Provider.of<ControlNotifier>(context, listen: false);
 
-    /// change to false text editing
     if (controlNotifier.isTextEditing) {
       controlNotifier.isTextEditing = !controlNotifier.isTextEditing;
       return false;
-    }
-
-    /// change to false painting
-    else if (controlNotifier.isPainting) {
+    } else if (controlNotifier.isPainting) {
       controlNotifier.isPainting = !controlNotifier.isPainting;
       return false;
-    }
-
-    /// show close dialog
-    else if (!controlNotifier.isTextEditing && !controlNotifier.isPainting) {
+    } else if (!controlNotifier.isTextEditing && !controlNotifier.isPainting) {
       return widget.onBackPress ??
           exitDialog(
             context: context,
@@ -675,7 +539,6 @@ class _MainViewState extends State<MainView> {
     return false;
   }
 
-  /// start item scale
   void _onScaleStart(ScaleStartDetails details) {
     if (_activeItem == null) {
       return;
@@ -686,7 +549,6 @@ class _MainViewState extends State<MainView> {
     _currentRotation = _activeItem!.rotation;
   }
 
-  /// update item scale
   void _onScaleUpdate(ScaleUpdateDetails details) {
     if (_activeItem == null) {
       return;
@@ -703,23 +565,18 @@ class _MainViewState extends State<MainView> {
     });
   }
 
-  /// Delete position logic
   void _deletePosition(EditableItem item, PointerMoveEvent details) {
     final widgetHeight = widget.highTextEditor ??
         (Platform.isIOS
             ? (_screenSize.size.height - 135) - _screenSize.viewPadding.top
             : (_screenSize.size.height - 132));
 
-    // Calculate the delete zone threshold based on widget height
-    const deleteZoneBottomOffset = 130.0; // Matches DeleteItem's bottom: 130
-    // Convert the bottom offset to normalized coordinates
+    const deleteZoneBottomOffset = 130.0;
     final deleteZoneDy = 0.5 - (deleteZoneBottomOffset / widgetHeight);
 
-    // Define a horizontal range for the delete zone
-    const deleteZoneDxMin = -0.15; // Slightly wider range for better usability
+    const deleteZoneDxMin = -0.15;
     const deleteZoneDxMax = 0.15;
 
-    // Debugging: Log positions to verify alignment
     debugPrint('Item position: (${item.position.dx}, ${item.position.dy})');
     debugPrint(
         'Delete zone: dy >= $deleteZoneDy, dx: [$deleteZoneDxMin, $deleteZoneDxMax]');
@@ -740,7 +597,6 @@ class _MainViewState extends State<MainView> {
     }
   }
 
-  /// Delete item logic
   void _deleteItemOnCoordinates(EditableItem item, PointerUpEvent details) {
     var _itemProvider =
         Provider.of<DraggableWidgetNotifier>(context, listen: false)
@@ -752,15 +608,12 @@ class _MainViewState extends State<MainView> {
             ? (_screenSize.size.height - 135) - _screenSize.viewPadding.top
             : (_screenSize.size.height - 132));
 
-    // Calculate the delete zone threshold based on widget height
-    const deleteZoneBottomOffset = 130.0; // Matches DeleteItem's bottom: 130
+    const deleteZoneBottomOffset = 130.0;
     final deleteZoneDy = 0.5 - (deleteZoneBottomOffset / widgetHeight);
 
-    // Define a horizontal range for the delete zone
     const deleteZoneDxMin = -0.15;
     const deleteZoneDxMax = 0.15;
 
-    // Debugging: Log positions on release
     debugPrint('Release position: (${item.position.dx}, ${item.position.dy})');
     debugPrint(
         'Delete zone: dy >= $deleteZoneDy, dx: [$deleteZoneDxMin, $deleteZoneDxMax]');
@@ -786,7 +639,6 @@ class _MainViewState extends State<MainView> {
     });
   }
 
-  /// update item position, scale, rotation
   void _updateItemPosition(EditableItem item, PointerDownEvent details) {
     if (_inAction) {
       return;
@@ -799,7 +651,6 @@ class _MainViewState extends State<MainView> {
     _currentScale = item.scale;
     _currentRotation = item.rotation;
 
-    /// set vibrate
     HapticFeedback.lightImpact();
   }
 }
