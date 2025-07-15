@@ -64,30 +64,51 @@ class _ExampleState extends State<Example> {
                   onPressed: () async {
                     String? mediaPath = await _prepareImage();
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => VSStoryDesigner(
-                                  centerText: "Start Creating Your Story",
-                                  // fontFamilyList: const [
-                                  //   FontType.abrilFatface,
-                                  //   FontType.alegreya,
-                                  //   FontType.typewriter
-                                  // ],
-                                  // middleBottomWidget: const SizedBox(),
-                                  themeType: ThemeType.light,
-                                  // OPTIONAL, Default ThemeType.dark
-                                  galleryThumbnailQuality: 250,
-                                  onDone: (uri) {
-                                    debugPrint(uri);
-                                    // SharePlus.instance.share(ShareParams(
-                                    // files: [XFile(File(uri).path)]));
-                                  },
-                                  mediaPath: mediaPath,
-                                  closeAlertTitle: 'Discard Changes?',
-                                  closeAlertDescription: 'Do you want to discard changes?',
-                                  closeAlertDiscardText: 'Discard',
-                                  closeAlertCancelText: 'cancel',
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VSStoryDesigner(
+                          centerText: "Start Creating Your Story",
+                          // fontFamilyList: const [
+                          //   FontType.abrilFatface,
+                          //   FontType.alegreya,
+                          //   FontType.typewriter
+                          // ],
+                          // middleBottomWidget: const SizedBox(),
+                          themeType: ThemeType.light,
+                          // OPTIONAL, Default ThemeType.dark
+                          galleryThumbnailQuality: 250,
+                          onDone: (uri) {
+                            debugPrint(uri);
+                            // SharePlus.instance.share(ShareParams(
+                            // files: [XFile(File(uri).path)]));
+                          },
+                          // mediaPath: mediaPath,
+                          closeAlertTitle: 'Discard Changes?',
+                          closeAlertDescription:
+                              'Do you want to discard changes?',
+                          closeAlertDiscardText: 'Discard',
+                          closeAlertCancelText: 'cancel',
+                          borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(24),
+                            bottomLeft: Radius.circular(24),
+                          ),
+                          bottomWidget: const [
+                            Text(
+                              "Widget num1",
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            Text(
+                              "Widget num2",
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                          ],
+                          heightTextEditor:
+                              MediaQuery.of(context).size.height * .9,
+                        ),
+                      ),
+                    );
                   },
                   child: const Text('Create',
                       style:

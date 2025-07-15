@@ -214,9 +214,13 @@ class _TopToolsState extends State<TopTools> {
                             saveToGallery: true,
                             fileName: controlNotifier.folderName,
                           );
-                          if (response) {
-                            Fluttertoast.showToast(msg: 'Successfully saved');
-                          } else {}
+                          if (response != null) {
+                            Fluttertoast.showToast(
+                                msg: 'Successfully saved to $response');
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Failed to save screenshot');
+                          }
                         }
                         // ignore: use_build_context_synchronously
                         Navigator.of(context, rootNavigator: true).pop();

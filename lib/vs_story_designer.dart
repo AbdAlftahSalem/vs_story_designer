@@ -135,7 +135,7 @@ class VSStoryDesigner extends StatefulWidget {
   final Widget? middleBottomWidget;
 
   /// on done
-  final Function(String)? onDone;
+  final Function(String) onDone;
 
   /// on done button Text
   final Widget? onDoneButtonStyle;
@@ -169,6 +169,11 @@ class VSStoryDesigner extends StatefulWidget {
 
   final Color? saveCardColor;
 
+  final BorderRadiusGeometry? borderRadius;
+  final Widget? parentWidget;
+  final List<Widget> bottomWidget;
+  final double? heightTextEditor;
+
   // share image file path
   final String? mediaPath;
 
@@ -200,6 +205,10 @@ class VSStoryDesigner extends StatefulWidget {
     required this.closeAlertDiscardText,
     required this.closeAlertCancelText,
     this.saveCardColor,
+    this.borderRadius,
+    this.parentWidget,
+    this.heightTextEditor,
+    this.bottomWidget = const [SizedBox()],
   });
 
   @override
@@ -265,6 +274,9 @@ class _VSStoryDesignerState extends State<VSStoryDesigner> {
         closeAlertDiscardText: widget.closeAlertDiscardText,
         closeAlertCancelText: widget.closeAlertCancelText,
         saveCardColor: widget.saveCardColor ?? Colors.white,
+        borderRadius: widget.borderRadius,
+        bottomWidget: widget.bottomWidget,
+        highTextEditor: widget.heightTextEditor,
       ),
     );
   }

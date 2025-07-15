@@ -3,8 +3,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 // import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:photo_view/photo_view.dart';
@@ -16,18 +18,22 @@ import 'package:vs_story_designer/src/domain/providers/notifiers/control_provide
 import 'package:vs_story_designer/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/gradient_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/painting_notifier.dart';
+
 // import 'package:vs_story_designer/src/domain/providers/notifiers/rendering_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/scroll_notifier.dart';
 import 'package:vs_story_designer/src/domain/providers/notifiers/text_editing_notifier.dart';
+import 'package:vs_story_designer/src/domain/sevices/save_as_image.dart';
 import 'package:vs_story_designer/src/presentation/bar_tools/top_tools.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/delete_item.dart';
 import 'package:vs_story_designer/src/presentation/draggable_items/draggable_widget.dart';
+
 // import 'package:vs_story_designer/src/presentation/main_view/widgets/rendering_indicator.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/painting.dart';
 import 'package:vs_story_designer/src/presentation/painting_view/widgets/sketcher.dart';
 import 'package:vs_story_designer/src/presentation/text_editor_view/TextEditor.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/font_family.dart';
 import 'package:vs_story_designer/src/presentation/utils/constants/item_type.dart';
+
 // import 'package:vs_story_designer/src/presentation/utils/constants/render_state.dart';
 import 'package:vs_story_designer/src/presentation/utils/modal_sheets.dart';
 import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
@@ -54,7 +60,7 @@ class MainView extends StatefulWidget {
   final Widget? middleBottomWidget;
 
   /// on done
-  final Function(String)? onDone;
+  final Function(String) onDone;
 
   /// on done button Text
   final Widget? onDoneButtonStyle;
@@ -93,6 +99,9 @@ class MainView extends StatefulWidget {
   final String closeAlertDescription;
   final String closeAlertDiscardText;
   final String closeAlertCancelText;
+  final BorderRadiusGeometry? borderRadius;
+  final List<Widget> bottomWidget;
+  final double? highTextEditor;
 
   final Color? saveCardColor;
 
@@ -124,6 +133,9 @@ class MainView extends StatefulWidget {
     required this.closeAlertDiscardText,
     required this.closeAlertCancelText,
     this.saveCardColor,
+    this.borderRadius,
+    required this.bottomWidget,
+    this.highTextEditor,
   });
 
   @override
@@ -242,13 +254,15 @@ class _MainViewState extends State<MainView> {
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(0),
+                              borderRadius: widget.borderRadius ??
+                                  BorderRadius.circular(8),
                               child: SizedBox(
                                 width: _screenSize.size.width,
-                                height: Platform.isIOS
-                                    ? (_screenSize.size.height - 0) -
-                                        _screenSize.viewPadding.top
-                                    : (_screenSize.size.height - 0),
+                                height: widget.highTextEditor ??
+                                    (Platform.isIOS
+                                        ? (_screenSize.size.height - 135) -
+                                            _screenSize.viewPadding.top
+                                        : (_screenSize.size.height - 132)),
                                 // child: ScreenRecorder(
                                 //   controller: _recorderController,
                                 child: RepaintBoundary(
@@ -419,14 +433,15 @@ class _MainViewState extends State<MainView> {
                                 drawWidget: widget.drawWidget,
                                 saveWidget: widget.saveWidget,
                                 textWidget: widget.textWidget,
+                                closeAlertDescription:
+                                    widget.closeAlertDescription,
                                 closeAlertCancelText:
                                     widget.closeAlertCancelText,
                                 closeAlertDiscardText:
                                     widget.closeAlertDiscardText,
-                                closeAlertDescription:
-                                    widget.closeAlertDescription,
                                 closeAlertTitle: widget.closeAlertTitle,
-                                saveCardColor: widget.saveCardColor,
+                                saveCardColor:
+                                    widget.saveCardColor ?? Colors.white,
                                 // renderWidget: () => startRecording(
                                 //     controlNotifier: controlNotifier,
                                 //     renderingNotifier: renderingNotifier,
@@ -441,33 +456,50 @@ class _MainViewState extends State<MainView> {
                           isDeletePosition: _isDeletePosition,
                         ),
 
-                        // /// bottom tools
-                        // if (!kIsWeb)
-                        //   Align(
-                        //     alignment: Alignment.bottomCenter,
-                        //     child: BottomTools(
-                        //       contentKey: contentKey,
-                        //       // renderWidget: () => startRecording(
-                        //       //     controlNotifier: controlNotifier,
-                        //       //     renderingNotifier: renderingNotifier,
-                        //       //     saveOnGallery: false),
-                        //       onDone: (bytes) {
-                        //         setState(() {
-                        //           widget.onDone!(bytes);
-                        //         });
-                        //       },
-                        //       onDoneButtonStyle: widget.onDoneButtonStyle,
-                        //       editorBackgroundColor:
-                        //           widget.editorBackgroundColor,
-                        //     ),
-                        //   ),
+                        /// bottom tools
+                        if (!kIsWeb)
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Wrap(
+                              children: List.generate(
+                                  widget.bottomWidget.length,
+                                  (index) => GestureDetector(
+                                        onTap: () async {
+                                          var response = await takePicture(
+                                            contentKey: contentKey,
+                                            context: context,
+                                            saveToGallery: true,
+                                            fileName:
+                                                controlNotifier.folderName,
+                                          );
+                                          widget.onDone!(response ?? "");
+                                        },
+                                        child: widget.bottomWidget[index],
+                                      )),
+                            ),
+                            // child: BottomTools(
+                            //   contentKey: contentKey,
+                            //   // renderWidget: () => startRecording(
+                            //   //     controlNotifier: controlNotifier,
+                            //   //     renderingNotifier: renderingNotifier,
+                            //   //     saveOnGallery: false),
+                            //   onDone: (bytes) {
+                            //     setState(() {
+                            //       widget.onDone!(bytes);
+                            //     });
+                            //   },
+                            //   onDoneButtonStyle: widget.onDoneButtonStyle,
+                            //   editorBackgroundColor:
+                            //       widget.editorBackgroundColor,
+                            // ),
+                          ),
 
                         /// show text editor
                         Visibility(
                           visible: controlNotifier.isTextEditing,
                           child: TextEditor(
                             context: context,
-                            doneText: widget.doneText ?? "",
+                            doneText: widget.doneText ?? 'Done',
                           ),
                         ),
 
@@ -475,7 +507,7 @@ class _MainViewState extends State<MainView> {
                         Visibility(
                           visible: controlNotifier.isPainting,
                           child: Painting(
-                            doneText: widget.doneText ?? "",
+                            doneText: widget.doneText ?? 'Done',
                           ),
                         )
                       ],
@@ -535,7 +567,7 @@ class _MainViewState extends State<MainView> {
                       ),
                     ),
                   ),
-                  //const RenderingIndicator()
+                  // const RenderingIndicator()
                 ],
               ),
             );
@@ -634,9 +666,9 @@ class _MainViewState extends State<MainView> {
             context: context,
             contentKey: contentKey,
             themeType: widget.themeType!,
-            title: widget.closeAlertTitle,
-            description: widget.closeAlertDescription,
             cancelText: widget.closeAlertCancelText,
+            description: widget.closeAlertDescription,
+            title: widget.closeAlertTitle,
             discardText: widget.closeAlertDiscardText,
           );
     }
@@ -671,23 +703,31 @@ class _MainViewState extends State<MainView> {
     });
   }
 
-  /// active delete widget with offset position
+  /// Delete position logic
   void _deletePosition(EditableItem item, PointerMoveEvent details) {
-    print("Dy: ${item.position.dy}");
-    print("Dx: ${item.position.dx}");
-    print("-" * 80);
-    if (item.type == ItemType.text &&
-        item.position.dy >= 0.22 &&
-        item.position.dx >= -0.03 &&
-        item.position.dx <= 0.122) {
-      setState(() {
-        _isDeletePosition = true;
-        item.deletePosition = true;
-      });
-    } else if (item.type == ItemType.gif &&
-        item.position.dy >= 0.21 &&
-        item.position.dx >= -0.25 &&
-        item.position.dx <= 0.25) {
+    final widgetHeight = widget.highTextEditor ??
+        (Platform.isIOS
+            ? (_screenSize.size.height - 135) - _screenSize.viewPadding.top
+            : (_screenSize.size.height - 132));
+
+    // Calculate the delete zone threshold based on widget height
+    const deleteZoneBottomOffset = 130.0; // Matches DeleteItem's bottom: 130
+    // Convert the bottom offset to normalized coordinates
+    final deleteZoneDy = 0.5 - (deleteZoneBottomOffset / widgetHeight);
+
+    // Define a horizontal range for the delete zone
+    const deleteZoneDxMin = -0.15; // Slightly wider range for better usability
+    const deleteZoneDxMax = 0.15;
+
+    // Debugging: Log positions to verify alignment
+    debugPrint('Item position: (${item.position.dx}, ${item.position.dy})');
+    debugPrint(
+        'Delete zone: dy >= $deleteZoneDy, dx: [$deleteZoneDxMin, $deleteZoneDxMax]');
+
+    if ((item.type == ItemType.text || item.type == ItemType.gif) &&
+        item.position.dy >= deleteZoneDy &&
+        item.position.dx >= deleteZoneDxMin &&
+        item.position.dx <= deleteZoneDxMax) {
       setState(() {
         _isDeletePosition = true;
         item.deletePosition = true;
@@ -700,24 +740,41 @@ class _MainViewState extends State<MainView> {
     }
   }
 
-  /// delete item widget with offset position
+  /// Delete item logic
   void _deleteItemOnCoordinates(EditableItem item, PointerUpEvent details) {
     var _itemProvider =
         Provider.of<DraggableWidgetNotifier>(context, listen: false)
             .draggableWidget;
     _inAction = false;
+
+    final widgetHeight = widget.highTextEditor ??
+        (Platform.isIOS
+            ? (_screenSize.size.height - 135) - _screenSize.viewPadding.top
+            : (_screenSize.size.height - 132));
+
+    // Calculate the delete zone threshold based on widget height
+    const deleteZoneBottomOffset = 130.0; // Matches DeleteItem's bottom: 130
+    final deleteZoneDy = 0.5 - (deleteZoneBottomOffset / widgetHeight);
+
+    // Define a horizontal range for the delete zone
+    const deleteZoneDxMin = -0.15;
+    const deleteZoneDxMax = 0.15;
+
+    // Debugging: Log positions on release
+    debugPrint('Release position: (${item.position.dx}, ${item.position.dy})');
+    debugPrint(
+        'Delete zone: dy >= $deleteZoneDy, dx: [$deleteZoneDxMin, $deleteZoneDxMax]');
+
     if (item.type == ItemType.image) {
-    } else if (item.type == ItemType.text &&
-            item.position.dy >= 0.32 &&
-            item.position.dx >= -0.122 &&
-            item.position.dx <= 0.122 ||
-        item.type == ItemType.gif &&
-            item.position.dy >= 0.21 &&
-            item.position.dx >= -0.25 &&
-            item.position.dx <= 0.25) {
+      // Image items are not deleted
+    } else if ((item.type == ItemType.text || item.type == ItemType.gif) &&
+        item.position.dy >= deleteZoneDy &&
+        item.position.dx >= deleteZoneDxMin &&
+        item.position.dx <= deleteZoneDxMax) {
       setState(() {
         _itemProvider.removeAt(_itemProvider.indexOf(item));
         HapticFeedback.heavyImpact();
+        debugPrint('Item deleted: ${item.type}');
       });
     } else {
       setState(() {
